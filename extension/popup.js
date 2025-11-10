@@ -17,7 +17,7 @@ document.getElementById("extractBtn").addEventListener("click", async () => {
       document.getElementById("status").textContent = data.error || "Failed.";
     }
   } catch (err) {
-    document.getElementById("status").textContent = "Server not running.";
+    document.getElementById("status").textContent = `Server not running. Error: ${err}`;
   }
 });
 

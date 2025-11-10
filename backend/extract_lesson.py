@@ -1,11 +1,15 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
 import html2text
 import pyperclip
 import re
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/extract", methods=["POST"])
 def extract_markdown():
@@ -15,8 +19,18 @@ def extract_markdown():
     if not url:
         return jsonify({"error": "Missing URL"}), 400
 
-    html = requests.get(url).text
-    soup = BeautifulSoup(html, "html.parser")
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+
+    driver = webdriver.Chrome(options=chrome_options)
+
+    driver.get(url)
+
+    page_source = driver.page_source
+
+    soup = BeautifulSoup(page_source, 'html.parser')
     lesson_div = soup.select_one("div#markdown-side")
 
     if not lesson_div:
