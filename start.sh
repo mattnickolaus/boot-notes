@@ -1,6 +1,6 @@
 #!/bin/bash
-python -m venv venv
+python -m venv .venv
 source venv/bin/activate
-pip install -r requirements.txt
-python app.py
+pip install -r backend/requirements.txt
+python extract_lesson.py
 
