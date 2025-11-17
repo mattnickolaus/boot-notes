@@ -24,11 +24,17 @@
 	border-radius: 9999px;
 	border-width: 1px;
 	border-style: solid;
-	border-color: #181D29;
+	border-color: rgba(0, 0, 0, 0.1);
 	font-weight: 600;
 	box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 	cursor: pointer;
 	margin-left: auto;
+	margin-top: 10px;
+	background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
+	transition: filter 0.3s ease;
+      }
+      button:hover {
+	  filter: brightness(70%);
       }
       svg {
 	height: 2em;
@@ -36,32 +42,46 @@
       #header {
 	  display: flex; 
 	  align-items: center;
-	  justify-content: center;
+	  justify-content: space-between;
+	  width: 100%;
+	  margin-bottom: 10px;
       }
       h1 {
-	  padding-right: 20px;
+	  color: #FFFFFF;
+	  margin: 0;
+	  padding: 0;
       }
       img {
 	  margin-bottom: 0; 
-	  margin-right: 0.5rem;
 	  border-radius: 9999px; 
 	  border-width: 2px; 
 	  border-color: rgb(107 114 128);
-	  height: 3rem;
+	  height: 2rem;
       }
       #lesson-title {
 	display: flex;
 	width: 100%; 
 	justify-content: center; 
 	align-items: center; 
-	margin: 10px 0;
+	padding: 10px 0;
+	font-weight: 600;
+	border-bottom: 1px solid #4e5564;
+    }
+    #lesson-title span {
+	font-size: 0.9rem;
+	padding-right: 5px;
+	font-weight: 600;
     }
     #lesson-header {
 	margin-right: auto; 
 	font-weight: 600;
+	font-size: 0.9rem;
     }
     #lesson-title svg {
-	margin-right: 5px;
+	margin-right: 10px;
+    }
+    #statusMessage {
+	margin-left: auto;
     }
     </style>
   <script type="module" src="./src/popup.ts"></script>
@@ -72,8 +92,9 @@
 	<img src="icons/icon128.png" alt="Boots holding a Notebook">
     </div>
     <div id="lesson-title">
+	<span>Lesson</span>
 	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="align-left" class="lucide lucide-align-left lucide-icon"><line x1="21" x2="3" y1="6" y2="6"></line><line x1="15" x2="3" y1="12" y2="12"></line><line x1="17" x2="3" y1="18" y2="18"></line></svg>
-	<span id="lesson-header">Intersecting Incompatible Types</span>
+	<span id="lesson-header"></span>
     </div>
   <button id="extractButton">
       <svg data-slot="icon" aria-hidden="true" fill="none" stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
