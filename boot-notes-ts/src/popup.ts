@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusMessage = document.getElementById('statusMessage');
     const lessonTitle = document.getElementById('lesson-header');
     const includeCodeCheckbox = document.getElementById('includeCodeCheckbox') as HTMLInputElement;
-
-
     document.body.appendChild(statusMessage);
 
     setLessonTitle(lessonTitle);
@@ -16,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	    if (tab && tab.id) {
 		try {
-		    const markdownResponse = await chrome.tabs.sendMessage(tab.id, { action: 'extractAndCopy' });
+		    const markdownResponse = await chrome.tabs.sendMessage(tab.id, { action: 'extractLesson' });
 
 		    if (!markdownResponse || markdownResponse.status !== 'success') {
 			statusMessage.textContent = `Error: ${markdownResponse.message || 'Unknown error.'}`;
