@@ -1,88 +1,94 @@
 import TurndownService from 'turndown';
 
-console.log("Boot Notes loading and listening");
+const turndownService = new TurndownService({
+    bulletListMarker: '-',
+    codeBlockStyle: 'fenced',
+    headingStyle: 'atx',
+});
+turndownService.keep(['video']);
 
-const turndownService = new TurndownService({ bulletListMarker: '-', codeBlockStyle: 'fenced', preformattedCode: 'true', headingStyle: 'atx'});
-turndownService.keep('video');
+
+type MessageAction = 'extractLesson' | 'extractHeader' | 'extractCode';
 
 interface Message {
-    action: string;
-} 
+    action: MessageAction;
+}
 
-type SendResponse = (response: any) => void;
+type StatusResponse = {
+    status: 'success' | 'error';
+    message?: string;
+};
+
+type MarkdownResponse = StatusResponse & {
+    markdown?: string;
+};
+
+type HeaderResponse = StatusResponse & {
+    lessonHeader?: string | null;
+};
+
+type CodeResponse = StatusResponse & {
+    code?: string | null;
+    language?: string;
+};
+
+type SendResponse = (response: StatusResponse | MarkdownResponse | HeaderResponse | CodeResponse) => void;
+
 
 const handleExtractLesson = (sendResponse: SendResponse) => {
-    console.log("Actions 'extractLesson' confirmed. Looking for .viewer div...");
     const viewerDiv = document.querySelector('.viewer');
-
-    if (viewerDiv) {
-	console.log(".viewer div found");
-
-	const tempDiv = viewerDiv.cloneNode(true) as HTMLElement;
-	tempDiv.querySelectorAll('svg, button, input').forEach(element => {
-	    element.remove();
-	});
-
-	const htmlContent = tempDiv.innerHTML;
-	const markdown = turndownService.turndown(htmlContent);
-
-	sendResponse({ status: 'success', markdown: markdown});
-
-    } else {
-	console.warn(".viewer div NOT found on this page.");
-	sendResponse({ status: 'error', message: 'Lesson content not found on this page.' });
+    if (!viewerDiv) {
+        sendResponse({ status: 'error', message: 'Lesson content not found.' });
+        return;
     }
-}
+
+    const tempDiv = viewerDiv.cloneNode(true) as HTMLElement;
+    tempDiv.querySelectorAll('svg, button, input').forEach(el => el.remove());
+
+    const htmlContent = tempDiv.innerHTML;
+    const markdown = turndownService.turndown(htmlContent);
+
+    sendResponse({ status: 'success', markdown });
+};
 
 const handleExtractHeader = (sendResponse: SendResponse) => {
-    console.log("Actions 'extractHeader confirmed. Looking for .viewer div h1...'")
     const header = document.querySelector('.viewer h1');
-
-    if (header) {
-	console.log("h1 header found")
-	const h1 = header.textContent;
-
-	sendResponse({ status: 'success', lessonHeader: h1});
-    } else {
-	console.warn("h1 NOT found on this page.");
-	sendResponse({ status: 'error', message: 'Lesson title not found on this page.' });
+    if (!header) {
+        sendResponse({ status: 'error', message: 'Lesson title not found.' });
+        return;
     }
-}
+    sendResponse({ status: 'success', lessonHeader: header.textContent });
+};
 
 const handleExtractCode = (sendResponse: SendResponse) => {
-    console.log("Action 'extractCode' confirmed. Looking for .cm-content div...");
     const codeEditor = document.querySelector('.cm-content') as HTMLElement;
-
-    if (codeEditor) {
-	console.log(".cm-content div found");
-	const language = codeEditor.dataset.language || '';
-	const lines = Array.from(codeEditor.querySelectorAll('.cm-line'));
-	const code = lines.map(line => line.textContent).join('\n');
-	
-	sendResponse({ status: 'success', code: code, language: language });
-    } else {
-	console.warn(".cm-content div NOT found on this page.");
-	// return response with null if not found
-	sendResponse({ status: 'success', code: null, language: null });
+    if (!codeEditor) {
+        sendResponse({ status: 'success', code: null, language: null });
+        return;
     }
-}
 
+    const language = codeEditor.dataset.language || '';
+    const lines = Array.from(codeEditor.querySelectorAll('.cm-line'));
+    const code = lines.map(line => line.textContent).join('\n');
+    
+    sendResponse({ status: 'success', code, language });
+};
 
-chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
-    console.log("Message recieved in content scritp: ", message);
-
-    switch(message.action) {
-	case "extractLesson":
-	    handleExtractLesson(sendResponse);
-	    break;
-	case "extractHeader":
-	    handleExtractHeader(sendResponse);
-	    break;
-	case "extractCode":
-	    handleExtractCode(sendResponse);
-	    break;
+chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse) => {
+    switch (message.action) {
+        case 'extractLesson':
+            handleExtractLesson(sendResponse);
+            break;
+        case 'extractHeader':
+            handleExtractHeader(sendResponse);
+            break;
+        case 'extractCode':
+            handleExtractCode(sendResponse);
+            break;
+        default:
+            sendResponse({ status: 'error', message: 'Unknown action requested.' });
     }
     
-    return true
+    return true;
 });
 

@@ -1,83 +1,86 @@
+function getElement<T extends HTMLElement>(id: string): T {
+    const element = document.getElementById(id);
+    if (!element) {
+        throw new Error(`Element with id "${id}" not found.`);
+    }
+    return element as T;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    const extractButton = document.getElementById('extractButton');
-    const statusMessage = document.getElementById('statusMessage');
-    const lessonTitle = document.getElementById('lesson-header');
-    const includeCodeCheckbox = document.getElementById('includeCodeCheckbox') as HTMLInputElement;
-    document.body.appendChild(statusMessage);
+    try {
+        initializePopup();
+    } catch (error) {
+        const statusMessage = document.getElementById('statusMessage');
+        if (statusMessage) {
+            statusMessage.textContent = 'An unexpected error occurred.';
+            console.error(error);
+        }
+    }
+});
 
-    setLessonTitle(lessonTitle);
+async function initializePopup() {
+    const lessonTitle = getElement<HTMLSpanElement>('lesson-header');
+    const extractButton = getElement<HTMLButtonElement>('extractButton');
+    const includeCodeCheckbox = getElement<HTMLInputElement>('includeCodeCheckbox');
+    const statusMessage = getElement<HTMLParagraphElement>('statusMessage');
 
-    if (extractButton) {
-	extractButton.addEventListener('click', async () => {
-	    statusMessage.textContent = 'Extracting and copying...';
-	    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab?.id) {
+            throw new Error('No active tab found.');
+        }
 
-	    if (tab && tab.id) {
-		try {
-		    const markdownResponse = await chrome.tabs.sendMessage(tab.id, { action: 'extractLesson' });
-
-		    if (!markdownResponse || markdownResponse.status !== 'success') {
-			statusMessage.textContent = `Error: ${markdownResponse.message || 'Unknown error.'}`;
-			return;
-		    }
-
-		    let finalMarkdown = markdownResponse.markdown;
-
-		    if (includeCodeCheckbox.checked) {
-			const codeResponse = await chrome.tabs.sendMessage(tab.id, { action: 'extractCode' });
-			if (codeResponse && codeResponse.status === 'success' && codeResponse.code) {
-			    const language = codeResponse.language || '';
-			    finalMarkdown += `\n\n#### Assignment Code:\n\n\`\`\`${language}\n${codeResponse.code}\n\`\`\``;
-			}
-		    }
-
-		    await navigator.clipboard.writeText(finalMarkdown);
-		    console.log("Copied to clipboard");
-		    statusMessage.textContent = "Lesson Copied to clipboard!";
-
-		} catch (error) {
-		    console.error('Error communicating with content script:', error);
-		    statusMessage.textContent = 'Could not connect to the page. Please reload the tab.';
-		}
-	    } else {
-		statusMessage.textContent = 'No active tab found.';
-	    }
-	});
+        const response = await chrome.tabs.sendMessage(tab.id, { action: 'extractHeader' });
+        
+        if (response?.status === 'success') {
+            lessonTitle.textContent = response.lessonHeader;
+        } else {
+            throw new Error(response?.message || 'Could not retrieve lesson title.');
+        }
+    } catch (error) {
+        lessonTitle.textContent = "Couldn't get lesson title.";
+        statusMessage.textContent = 'Please refresh the Boot.dev page and try again.';
+        console.error('Error setting lesson title:', error);
     }
 
-})
-
-
-function setLessonTitle(lessonTitle: HTMLElement) {
-    lessonTitle.textContent = "Test in function";
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-	const activeTab = tabs[0];
-	if (!activeTab) {
-	    console.log("Hey no tab found.");
-	}
-
-	if (activeTab && activeTab.id) {
-	    try {
-		chrome.tabs.sendMessage(
-		    activeTab.id,
-		    { action: 'extractHeader' },
-		    (response) => {
-			if (chrome.runtime.lastError) {
-			    lessonTitle.textContent = "Refresh Page - Could not retrieve Boot.dev lesson";
-			} else if (response && response.status === 'success') {
-			    console.log("Sucessful header response received.");
-			    lessonTitle.textContent = response.lessonHeader;
-			} else {
-			    lessonTitle.textContent = `Error: ${response.message} || 'Unknown error.'`;
-			}
-		    });
-	    } catch(error) {
-		console.error("Error: ", error)
-		lessonTitle.textContent = `Error: ${error} || 'Unknown error.'`;
-	    }
-	} else {
-	    statusMessage.textContent = 'No active tab found.';
-	}
+    extractButton.addEventListener('click', () => {
+        handleExtractClick(includeCodeCheckbox, statusMessage);
     });
+}
+
+async function handleExtractClick(
+    includeCodeCheckbox: HTMLInputElement,
+    statusMessage: HTMLParagraphElement
+) {
+    statusMessage.textContent = 'Extracting and copying...';
+
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab?.id) {
+            throw new Error('No active tab found.');
+        }
+
+        const markdownResponse = await chrome.tabs.sendMessage(tab.id, { action: 'extractLesson' });
+        if (markdownResponse?.status !== 'success') {
+            throw new Error(markdownResponse?.message || 'Failed to extract lesson.');
+        }
+        let finalMarkdown = markdownResponse.markdown;
+
+        if (includeCodeCheckbox.checked) {
+            const codeResponse = await chrome.tabs.sendMessage(tab.id, { action: 'extractCode' });
+            if (codeResponse?.status === 'success' && codeResponse.code) {
+                const { code, language } = codeResponse;
+                const formattedCode = `\n\n#### Assignment Code:\n\n\`\`\`${language || ''}\n${code}\n\`\`\``;
+                finalMarkdown += formattedCode;
+            }
+        }
+
+        await navigator.clipboard.writeText(finalMarkdown);
+        statusMessage.textContent = "Lesson copied to clipboard!";
+
+    } catch (error) {
+        console.error('Error during extraction:', error);
+        statusMessage.textContent = `Error: ${(error as Error).message || 'An unknown error occurred.'}`;
+    }
 }
 
