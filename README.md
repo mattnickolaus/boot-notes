@@ -4,10 +4,10 @@ A Chrome extension to convert [boot.dev](https://boot.dev) lessons to markdown a
 
 ![Insert some gif here of a quick demo]()
 
-* [Requirements](##requirements)
-* [Installation](##installation)
-* [Usage](##usage)
-* [Background](##background)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Background](#background)
 
 ## Background
 
