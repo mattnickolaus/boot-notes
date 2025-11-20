@@ -1,66 +1,61 @@
 # boot-notes
 
-A Chrome extension to convert [boot.dev](https://boot.dev) lessons to markdown and copy to clipboard for efficient note-taking in your favorite platform such as Obsidian or Notion.
+A Chrome extension for converting [boot.dev](https://boot.dev) lessons to Markdown for efficient note-taking in platforms like Obsidian or Notion.
 
-![Insert some gif here of a quick demo]()
+![Quick Demo](./images/boot-notes-1.png)
 
+* [Features](#features)
 * [Requirements](#requirements)
 * [Installation](#installation)
 * [Usage](#usage)
-* [Background](#background)
+* [Contributing](#contributing)
+* [License](#license)
 
-## Background
+## Features
 
-
-[Boot.dev](https://boot.dev) has been my personal learning platform of choice for learning to code and improving my skills in backend development. I cannot say enough good things about the site. It's fun, interactive, makes learning addicting, and has a cool wizard bear named Boots.
-
-Along my journey through their learning path I have taken rather meticulous notes on each lesson in order to reference later. I happen to use Obsidian as my app of choice and while working on lessons in boot.dev I am often copy and pasting lesson content and upon completion the code from assignments into my notes. However, this process is not ideal and often results in unwanted elements being copied requiring edits and ultimately delaying the process of learning the content. I have tried other plug-ins such as Obsidian Web Clipper with similar results requiring edits and unable to extract code from the assignments. 
-
-All this led to me to write my own solution [boot-notes](# boot-notes). It extracts the boot.dev specific elements (`viewer` and `cm-line`) from the DOM and converts those inner HTML elements to markdown using [turndown](https://github.com/mixmark-io/turndown) and copy to the users clipboard.
+- **Convert to Markdown**: Extracts lesson content from boot.dev and converts it to Markdown.
+- **Copy to Clipboard**: Copies the Markdown content to your clipboard.
+- **Include Code**: Option to include code from the editor in the copied content.
 
 ## Requirements
 
-node
+* [Node.js](https://nodejs.org/en/) (>=20.19.0)
 
 ## Installation
 
-1. Clone the repository and cd into the directory:
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/mattnickolaus/boot-notes.git && cd ./boot-notes
+    ```
 
-```
-git clone https://github.com/mattnickolaus/boot-notes.git && cd ./boot-notes
-```
+2.  Install dependencies:
+    ```bash
+    npm ci
+    ```
 
-2. Install dependencies:
+3.  Build the extension:
+    ```bash
+    npm run build
+    ```
+    This will create a `dist` directory with the extension files.
 
-```
-npm ci
-```
-
-3. Build the extension
-
-```
-npm run build
-```
-
-This outputs the build to the distribution directory. Make note of the `{repository file path}/dist`
-
-
-4. Launch Chrome and click on the puzzle peice extension icon next to the search bar and then `Manage Extensions`.
-
-5. In the top right corner turn on `Developer Mode`. This will reveal the `Load unpacked` button.
-
-6. Click on `Load unpacked` and navigate to the repository file path and select the /dist directory.
-
-Then you are all set to start using the chrome extension on [boot.dev](https://boot.dev) lessons.
+4.  Load the extension in Chrome:
+    *   Open Chrome and navigate to `chrome://extensions`.
+    *   Enable "Developer mode" in the top right corner.
+    *   Click "Load unpacked" and select the `dist` directory.
 
 ## Usage
 
-While on a boot.dev lesson click on the chrome extension icon.
+While on a boot.dev lesson, click the Boot Notes extension icon. You'll see a popup with an option to include the assignment code. Click "Copy Lesson" to copy the lesson content to your clipboard.
 
-Select the Boot Notes extension. And the popup below will be displayed:
+![Boot Notes Extension Popup UI](./images/boot-notes-1.png)
 
-![boot-notes extension image](./images/boot-notes-1.png)
+## Contributing
 
-You have the option to include the assignment code from the editor. If not you can simply hit `Copy Lesson` to extract the lesson content to your clipboard for your note-taking purposes.
+Contributions are welcome! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
 
 
