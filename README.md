@@ -16,7 +16,7 @@ A Chrome extension to convert [boot.dev](https://boot.dev) lessons to markdown a
 
 Along my journey through their learning path I have taken rather meticulous notes on each lesson in order to reference later. I happen to use Obsidian as my app of choice and while working on lessons in boot.dev I am often copy and pasting lesson content and upon completion the code from assignments into my notes. However, this process is not ideal and often results in unwanted elements being copied requiring edits and ultimately delaying the process of learning the content. I have tried other plug-ins such as Obsidian Web Clipper with similar results requiring edits and unable to extract code from the assignments. 
 
-All this led to me to write my own solution [boot-notes](# boot-notes). It extracts the boot.dev specific elements (`viewer` and `cm-line`) from the DOM and converts those inner HTML elements to markdown using `[turndown](https://github.com/mixmark-io/turndown)` and copy to the users clipboard.
+All this led to me to write my own solution [boot-notes](# boot-notes). It extracts the boot.dev specific elements (`viewer` and `cm-line`) from the DOM and converts those inner HTML elements to markdown using [turndown](https://github.com/mixmark-io/turndown) and copy to the users clipboard.
 
 ## Requirements
 
