@@ -14,8 +14,9 @@ A Chrome extension for converting [boot.dev](https://boot.dev) lessons to Markdo
 ## Features
 
 - **Convert to Markdown**: Extracts lesson content from boot.dev and converts it to Markdown.
+    - Including: Code Snippets, Images, and *Videos (videos extracted as html unconverted)
 - **Copy to Clipboard**: Copies the Markdown content to your clipboard.
-- **Include Code**: Option to include code from the editor in the copied content.
+- **Include Code**: Option to include code from the boot.dev editor in the copied content.
 
 ## Requirements
 
@@ -53,6 +54,8 @@ While on a boot.dev lesson, click the Boot Notes extension icon. You'll see a po
 ## Contributing
 
 Contributions are welcome! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
+
+> Note: I intend to port this over to a Firefox extension in the near future as well.
 
 ## License
 
