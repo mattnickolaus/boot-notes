@@ -2,7 +2,7 @@
 
 A Chrome extension for converting [boot.dev](https://boot.dev) lessons to Markdown for efficient note-taking in platforms like Obsidian or Notion.
 
-![Quick Demo](./images/boot-notes-1.png)
+![Quick Demo](./images/boot-notes-demo_4.gif)
 
 * [Features](#features)
 * [Requirements](#requirements)
